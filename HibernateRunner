@@ -1,0 +1,120 @@
+# Hibernate
+package Hibernate;
+
+/**
+ * Created by luceromoreno on 6/29/17.
+ */
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public class HibernateRunner {
+    private List<Student> students;
+    private DoingSome theHibernateUtility;
+
+    public HibernateRunner() {
+        theHibernateUtility = new DoingSome();
+    }
+
+    public static void main(String[] args) {
+
+        HibernateRunner HibernateExample = new HibernateRunner();
+        HibernateExample.addNewStudents();
+        HibernateExample.showAllStudents();
+        HibernateExample.modifyStudents();
+        HibernateExample.addSharedAddress();
+        HibernateExample.deleteStudents();
+
+    }
+
+
+    private void addNewStudents() {
+        Session session = theHibernateUtility.getCurrentSession();
+
+        Transaction transaction = session.beginTransaction();
+
+        Student nameStudent = new Student();
+        nameStudent.setFirstname("fName");
+        nameStudent.setLastname("lName");
+
+        Student Student1 = new Student();
+        Student1.setFirstname("Lucero");
+        Student1.setLastname("Moreno");
+
+
+        session.save(nameStudent);
+        session.save(Student1);
+        transaction.commit();
+
+        System.out.println("Student's ID number is: " + nameStudent.getId());
+        System.out.println("This student's ID is: " + Student1.getId());
+    }
+
+    private void showAllStudents() {
+        Session session = theHibernateUtility.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        Query allStudentsQuery = session.createQuery("select s from Student as s order by s.id");
+        students = allStudentsQuery.list();
+        System.out.println("Students: " + students.size());
+        Iterator<Sutudent> iteration = students.iterator();
+
+        while (iteration.hasNext()) {
+            Student element = iteration.next();
+            System.out.println(element.toString());
+            System.out.println("Addresses: " + element.getAddresses().size());
+        }
+        transaction.commit();
+    }
+
+
+    private void modifyStudents() {
+
+        Session session = theHibernateUtility.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        Query singleStudentQuery = session.createQuery("select s from Student as s where s.firstname='Lucero'");
+        Student Student1 = (Student) singleUStudentQuery.uniqueResult();
+        Student1.setFirstname("Ali");
+        session.merge(Student1);
+        transaction.commit();
+        showAllStudents();
+    }
+
+    private void addSharedAddress() {
+        Session session = theHibernateUtility.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        Query student2Query = session.createQuery("select s from Student as s where s.firstname='Ali''");
+        Student Student2 = (Student) student2Query.uniqueResult();
+        Query fNameQuery = session.createQuery("select s from Student as s where s.fName='Lucero'");
+        Student fNameStudent = (Student) fNameQuery.uniqueResult();
+        Address sharedAddress = new Address();
+        sharedAddress.setAddress("(31 S. 47th E.");
+        Set<Address> Student2Addresses = Student2.getAddresses();
+        Student2Addresses.add(sharedAddresses);
+        Set<Addresses> fNameAddresses = fNameStudent.getAddresses();
+        fNameAddresses.add(sharedAddresses);
+        session.save(sharedAddresses);
+        session.merge(Student2Student);
+        session.merge(fNameStudent);
+        transaction.commit();
+        showAllStudents();
+    }
+
+    private void deleteStudents() {
+        Session session = theHibernateUtility.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        int numStudents = students.size();
+        System.out.println("Students in school: " + numStudents);
+        for (int i = 0; i < numStudents; i++) {
+            System.out.println("Removing student " + students.get(i).getFname());
+            session.delete(students.get(i));
+        }
+        transaction.commit();
+        System.out.println(students);
+        students.clear();
+        System.out.println(students);
+    }
+}
